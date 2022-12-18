@@ -69,9 +69,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: |
-            ${{ env.IMAGE_NAME }}
-            ${{ env.IMAGE_NAME_LATEST }}
+          images: ghcr.io/${{ github.repository }}
 
       - name: Build the image
         if: steps.check_tag.outputs.tag_exists == 'false'
