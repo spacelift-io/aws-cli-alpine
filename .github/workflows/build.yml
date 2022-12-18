@@ -1,0 +1,48 @@
+name: Build
+
+on:
+  push:
+    ignore-branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  deployment:
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+    name: Build the image
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ github.repository_owner }}/awscliv2:${{ github.sha }}
+      AWS_CLI_VERSION: 2.9.8
+      ALPINE_VERSION: 3.17
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@main
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        if: matrix.arch == 'arm64'
+        with:
+          platforms: linux/arm64
+
+      - name: Setup buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build the image
+        uses: docker/build-push-action@v2
+        with:
+          platforms: linux/${{ matrix.arch }}
+          load: true
+          push: false
+          buil-args: |
+            AWS_CLI_VERSION=${{ env.AWS_CLI_VERSION }}
+            ALPINE_VERSION=${{ env.ALPINE_VERSION }}
+          tags: ${{ env.IMAGE_NAME }}
+
+      - name: Test if AWS CLI works
+        run: |
+          docker run --rm ${{ env.IMAGE_NAME }} sh -c "aws sts get-caller-identity"
