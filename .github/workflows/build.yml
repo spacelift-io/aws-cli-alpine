@@ -16,7 +16,7 @@ jobs:
     name: Build the image
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ${{ github.repository_owner }}/awscliv2:${{ github.sha }}
+      IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
       AWS_CLI_VERSION: 2.9.8
       ALPINE_VERSION: 3.17
     steps:
@@ -38,7 +38,7 @@ jobs:
           platforms: linux/${{ matrix.arch }}
           load: true
           push: false
-          buil-args: |
+          build-args: |
             AWS_CLI_VERSION=${{ env.AWS_CLI_VERSION }}
             ALPINE_VERSION=${{ env.ALPINE_VERSION }}
           tags: ${{ env.IMAGE_NAME }}

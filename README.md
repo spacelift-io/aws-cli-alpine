@@ -8,4 +8,11 @@ COPY --from=ghcr.io/spacelift-io/awscliv2:2.9.8 /usr/local/aws-cli/ /usr/local/a
 COPY --from=ghcr.io/spacelift-io/awscliv2:2.9.8 /aws-cli-bin/ /usr/local/bin/
 ```
 
-To bump the version, simply update the `AWS_CLI_VERSION` in `build.yml` and `publish.yml`.
+The newest releases can be found in the [Releases](https://github.com/spacelift-io/aws-cli-alpine/releases) section.
+
+## Schedule & builds
+
+The release process is automated and the image is published to GitHub Container Registry.
+
+We check for the latest AWS CLI version in `tag_latest_version.yml` workflow periodically.
+If a new version is found, we create a tag and `publish.yml` picks it up, builds it and published it to GitHub Container Registry.
