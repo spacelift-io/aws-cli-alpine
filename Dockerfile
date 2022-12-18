@@ -1,8 +1,8 @@
-ARG ALPINE_VERSION=3.17
+ARG ALPINE_VERSION
 
 FROM python:3.9-alpine${ALPINE_VERSION}
 
-ARG AWS_CLI_VERSION=2.9.8
+ARG AWS_CLI_VERSION
 
 RUN apk add --no-cache git \
         unzip \

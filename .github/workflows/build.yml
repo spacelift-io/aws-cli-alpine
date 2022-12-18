@@ -1,4 +1,4 @@
-name: Build
+name: Build 👷
 
 on:
   push:
@@ -45,4 +45,4 @@ jobs:
 
       - name: Test if AWS CLI works
         run: |
-          docker run --rm ${{ env.IMAGE_NAME }} sh -c "aws sts get-caller-identity"
+          docker run --rm ${{ env.IMAGE_NAME }} sh -c "/aws-cli-bin/aws --version"

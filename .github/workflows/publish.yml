@@ -1,4 +1,4 @@
-name: Build
+name: Publish 🚀
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   deployment:
-    name: Build the image
+    name: Publish the image
     runs-on: ubuntu-latest
     env:
       AWS_CLI_VERSION: 2.9.8
@@ -32,11 +32,18 @@ jobs:
       - name: Setup buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/awscliv2:${{ env.AWS_CLI_VERSION }}
+
       - name: Build the image
         uses: docker/build-push-action@v2
         with:
           platforms: linux/amd64,linux/arm64
           push: true
+          labels: ${{ steps.meta.outputs.labels }}
           buil-args: |
             AWS_CLI_VERSION=${{ env.AWS_CLI_VERSION }}
             ALPINE_VERSION=${{ env.ALPINE_VERSION }}
