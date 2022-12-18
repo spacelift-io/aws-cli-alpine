@@ -2,20 +2,24 @@ name: Publish 🚀
 
 on:
   push:
-    branches: [main]
-  schedule:
-    - cron: '0 0 * * *'
+    tags: [ '*' ]
 
 jobs:
   deployment:
     name: Publish the image
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     env:
-      AWS_CLI_VERSION: 2.9.8
+      AWS_CLI_VERSION: ${{ github.ref_name }}
       ALPINE_VERSION: 3.17
     steps:
       - name: Check out repository code
         uses: actions/checkout@main
+
+      - name: Set image name as env var
+        run: echo "IMAGE_NAME=ghcr.io/${{ github.repository }}:${{ env.AWS_CLI_VERSION }}" >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -36,7 +40,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io/${{ github.repository_owner }}/awscliv2:${{ env.AWS_CLI_VERSION }}
+          images: ${{ env.IMAGE_NAME }}
 
       - name: Build the image
         uses: docker/build-push-action@v2
@@ -44,8 +48,25 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           labels: ${{ steps.meta.outputs.labels }}
-          buil-args: |
+          build-args: |
             AWS_CLI_VERSION=${{ env.AWS_CLI_VERSION }}
             ALPINE_VERSION=${{ env.ALPINE_VERSION }}
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/awscliv2:${{ env.AWS_CLI_VERSION }}
+          tags: ${{ env.IMAGE_NAME }}
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ env.AWS_CLI_VERSION }}
+          makeLatest: true
+          skipIfReleaseExists: true
+          body: |
+            Release of AWS CLI `v${{ env.AWS_CLI_VERSION }}` on Alpine Linux `v${{ env.ALPINE_VERSION }}`.
+            The image is available on GitHub Container Registry:
+            - [`${{ env.IMAGE_NAME }}`](https://github.com/${{ github.repository }}/pkgs/container/aws-cli-alpine)
+
+            To use it in your Dockerfile, add the following lines:
+            ```dockerfile
+            COPY --from=${{ env.IMAGE_NAME }} /usr/local/aws-cli/ /usr/local/aws-cli/
+            COPY --from=${{ env.IMAGE_NAME }} /aws-cli-bin/ /usr/local/bin/
+            ```
