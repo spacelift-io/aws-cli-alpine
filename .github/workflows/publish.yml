@@ -1,8 +1,9 @@
 name: Publish 🚀
 
 on:
-  push:
-    tags: [ '*' ]
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 5 * * *'
 
 jobs:
   deployment:
@@ -12,21 +13,46 @@ jobs:
       contents: write
       packages: write
     env:
-      AWS_CLI_VERSION: ${{ github.ref_name }}
       ALPINE_VERSION: 3.17
     steps:
       - name: Check out repository code
         uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+
+      - name: Get latest AWS CLI version
+        id: latest_version
+        uses: tdemin/find-latest-tag@v1.0.1
+        with:
+          repo: https://github.com/aws/aws-cli.git
+          tag: '2\.[0-9]+\.[0-9]+'
+
+      - name: Check if tag exists already
+        id: check_tag
+        run: |
+          if git rev-parse ${{ steps.latest_version.outputs.tag }} >/dev/null 2>&1
+          then
+            echo "tag_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "tag_exists=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Set AWS CLI version as env var
+        if: steps.check_tag.outputs.tag_exists == 'false'
+        run: echo "AWS_CLI_VERSION=${{ steps.latest_version.outputs.tag }}" >> $GITHUB_ENV
 
       - name: Set image name as env var
+        if: steps.check_tag.outputs.tag_exists == 'false'
         run: echo "IMAGE_NAME=ghcr.io/${{ github.repository }}:${{ env.AWS_CLI_VERSION }}" >> $GITHUB_ENV
 
       - name: Set up QEMU
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: docker/setup-qemu-action@v2
         with:
           platforms: linux/arm64
 
       - name: Log in to GitHub registry
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
@@ -34,15 +60,18 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup buildx
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: docker/setup-buildx-action@v2
 
       - name: Docker meta
+        if: steps.check_tag.outputs.tag_exists == 'false'
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.IMAGE_NAME }}
 
       - name: Build the image
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: docker/build-push-action@v2
         with:
           platforms: linux/amd64,linux/arm64
@@ -53,7 +82,16 @@ jobs:
             ALPINE_VERSION=${{ env.ALPINE_VERSION }}
           tags: ${{ env.IMAGE_NAME }}
 
+      - name: Push tag
+        if: steps.check_tag.outputs.tag_exists == 'false'
+        run: |
+          git config --local user.email "cicd@spacelift.io"
+          git config --local user.name "Spacelift CI/CD"
+          git tag -a ${{ env.AWS_CLI_VERSION }} -m "AWS CLI v${{ env.AWS_CLI_VERSION }}"
+          git push origin ${{ env.AWS_CLI_VERSION }}
+
       - name: Create release
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
