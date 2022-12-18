@@ -43,7 +43,9 @@ jobs:
 
       - name: Set image name as env var
         if: steps.check_tag.outputs.tag_exists == 'false'
-        run: echo "IMAGE_NAME=ghcr.io/${{ github.repository }}:${{ env.AWS_CLI_VERSION }}" >> $GITHUB_ENV
+        run: |
+          echo "IMAGE_NAME=ghcr.io/${{ github.repository }}:${{ env.AWS_CLI_VERSION }}" >> $GITHUB_ENV
+          echo "IMAGE_NAME_LATEST=ghcr.io/${{ github.repository }}:latest" >> $GITHUB_ENV
 
       - name: Set up QEMU
         if: steps.check_tag.outputs.tag_exists == 'false'
@@ -68,7 +70,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.IMAGE_NAME }}
+          images: |
+            ${{ env.IMAGE_NAME }}
+            ${{ env.IMAGE_NAME_LATEST }}
 
       - name: Build the image
         if: steps.check_tag.outputs.tag_exists == 'false'
@@ -80,7 +84,9 @@ jobs:
           build-args: |
             AWS_CLI_VERSION=${{ env.AWS_CLI_VERSION }}
             ALPINE_VERSION=${{ env.ALPINE_VERSION }}
-          tags: ${{ env.IMAGE_NAME }}
+          tags: |
+            ${{ env.IMAGE_NAME }}
+            ${{ env.IMAGE_NAME_LATEST }}
 
       - name: Push tag
         if: steps.check_tag.outputs.tag_exists == 'false'
@@ -96,6 +102,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ env.AWS_CLI_VERSION }}
+          tag: ${{ env.AWS_CLI_VERSION }}
           makeLatest: true
           skipIfReleaseExists: true
           body: |
