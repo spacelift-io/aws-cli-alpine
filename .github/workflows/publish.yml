@@ -103,7 +103,7 @@ jobs:
           makeLatest: true
           skipIfReleaseExists: true
           body: |
-            Release of AWS CLI `v${{ env.AWS_CLI_VERSION }}` on Alpine Linux `v${{ env.ALPINE_VERSION }}`.
+            Release of AWS CLI [v${{ env.AWS_CLI_VERSION }}](https://github.com/aws/aws-cli/releases/tag/${{ env.AWS_CLI_VERSION }}) on Alpine Linux v${{ env.ALPINE_VERSION }}.
             The image is available on GitHub Container Registry:
             - [`${{ env.IMAGE_NAME }}`](https://github.com/${{ github.repository }}/pkgs/container/aws-cli-alpine)
 
