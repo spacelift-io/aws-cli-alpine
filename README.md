@@ -11,8 +11,8 @@ As of December 2022, this process is extremely slow (building on ARM architectur
 Other Alpine-based images can now simply pull pre-built the binaries like so:
 
 ```dockerfile
-COPY --from=ghcr.io/spacelift-io/awscliv2 /usr/local/aws-cli/ /usr/local/aws-cli/
-COPY --from=ghcr.io/spacelift-io/awscliv2 /aws-cli-bin/ /usr/local/bin/
+COPY --from=ghcr.io/spacelift-io/aws-cli-alpine /usr/local/aws-cli/ /usr/local/aws-cli/
+COPY --from=ghcr.io/spacelift-io/aws-cli-alpine /aws-cli-bin/ /usr/local/bin/
 ```
 
 The newest releases can be found in the [Releases](https://github.com/spacelift-io/aws-cli-alpine/releases) section.
