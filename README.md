@@ -17,8 +17,6 @@ COPY --from=ghcr.io/spacelift-io/aws-cli-alpine /aws-cli-bin/ /usr/local/bin/
 
 The newest releases can be found in the [Releases](https://github.com/spacelift-io/aws-cli-alpine/releases) section.
 
-> **Note:** As of December 2022, AWS CLI v2 [builds with PyInstaller 5.3](https://github.com/aws/aws-cli/blob/2.9.8/requirements-build.txt#L4). This version is only compatible with Python 3.9, that's why we use an older Python image.
-
 ## Schedule & builds 📅
 
 We check for the latest AWS CLI version in `publish.yml` workflow periodically.
