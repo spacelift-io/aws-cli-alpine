@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
-      AWS_CLI_VERSION: 2.11.3
-      ALPINE_VERSION: 3.17
+      AWS_CLI_VERSION: 2.11.26
+      ALPINE_VERSION: 3.18
     steps:
       - name: Check out repository code
         uses: actions/checkout@main
