@@ -2,7 +2,7 @@ name: Publish 🚀
 
 on:
   schedule:
-    - cron: '0 5 * * *'
+    - cron: '0 5,19 * * *'
 
 jobs:
   deployment:
@@ -12,7 +12,7 @@ jobs:
       contents: write
       packages: write
     env:
-      ALPINE_VERSION: 3.17
+      ALPINE_VERSION: 3.18
     steps:
       - name: Check out repository code
         uses: actions/checkout@main
