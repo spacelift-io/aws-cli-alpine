@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
-      AWS_CLI_VERSION: 2.15.20
-      ALPINE_VERSION: 3.19
+      AWS_CLI_VERSION: "2.16.11"
+      ALPINE_VERSION: "3.20"
     steps:
       - name: Check out repository code
         uses: actions/checkout@main
@@ -33,7 +33,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build the image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/${{ matrix.arch }}
           load: true

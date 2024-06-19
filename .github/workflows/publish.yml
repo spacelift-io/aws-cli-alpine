@@ -12,7 +12,7 @@ jobs:
       contents: write
       packages: write
     env:
-      ALPINE_VERSION: 3.19
+      ALPINE_VERSION: "3.20"
     steps:
       - name: Check out repository code
         uses: actions/checkout@main
@@ -73,7 +73,7 @@ jobs:
 
       - name: Build the image
         if: steps.check_tag.outputs.tag_exists == 'false'
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           push: true
