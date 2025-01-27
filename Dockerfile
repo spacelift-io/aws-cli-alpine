@@ -16,6 +16,7 @@ RUN mkdir /aws && \
     cd /aws && \
     python -m venv venv && \
     . venv/bin/activate && \
+    pip install setuptools && \
     ./scripts/installers/make-exe
 
 RUN unzip /aws/dist/awscli-exe.zip && \
