@@ -1,6 +1,6 @@
 ARG ALPINE_VERSION
 
-FROM python:3.11-alpine${ALPINE_VERSION} AS builder
+FROM python:3.13-alpine${ALPINE_VERSION} AS builder
 
 ARG AWS_CLI_VERSION
 
@@ -16,6 +16,7 @@ RUN mkdir /aws && \
     cd /aws && \
     python -m venv venv && \
     . venv/bin/activate && \
+    pip install --upgrade setuptools && \
     ./scripts/installers/make-exe
 
 RUN unzip /aws/dist/awscli-exe.zip && \

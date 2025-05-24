@@ -17,11 +17,17 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
-      AWS_CLI_VERSION: "2.16.11"
-      ALPINE_VERSION: "3.20"
+      ALPINE_VERSION: "3.21"
     steps:
       - name: Check out repository code
         uses: actions/checkout@main
+
+      - name: Get latest AWS CLI version
+        id: latest_version
+        uses: tdemin/find-latest-tag@v1
+        with:
+          repo: https://github.com/aws/aws-cli.git
+          tag: '2\.[0-9]+\.[0-9]+'
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -39,7 +45,7 @@ jobs:
           load: true
           push: false
           build-args: |
-            AWS_CLI_VERSION=${{ env.AWS_CLI_VERSION }}
+            AWS_CLI_VERSION=${{ steps.latest_version.outputs.tag }}
             ALPINE_VERSION=${{ env.ALPINE_VERSION }}
           tags: ${{ env.IMAGE_NAME }}
 
