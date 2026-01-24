@@ -12,7 +12,7 @@ jobs:
       contents: write
       packages: write
     env:
-      ALPINE_VERSION: "3.21"
+      ALPINE_VERSION: "3.23"
     steps:
       - name: Check out repository code
         uses: actions/checkout@main

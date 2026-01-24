@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
-      ALPINE_VERSION: "3.21"
+      ALPINE_VERSION: "3.23"
     steps:
       - name: Check out repository code
         uses: actions/checkout@main

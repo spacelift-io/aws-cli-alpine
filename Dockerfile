@@ -5,11 +5,11 @@ FROM python:3.13-alpine${ALPINE_VERSION} AS builder
 ARG AWS_CLI_VERSION
 
 RUN apk add --no-cache git \
-        unzip \
-        groff \
-        build-base \
-        libffi-dev \
-        cmake
+    unzip \
+    groff \
+    build-base \
+    libffi-dev \
+    cmake
 
 RUN mkdir /aws && \
     git clone --single-branch --depth 1 -b ${AWS_CLI_VERSION} https://github.com/aws/aws-cli.git /aws && \
